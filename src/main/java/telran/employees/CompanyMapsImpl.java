@@ -1,56 +1,76 @@
 package telran.employees;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
+
 //So far we do consider optimization
 public class CompanyMapsImpl implements Company {
-	TreeMap<Long,Employee> employees= new TreeMap<>();
-	HashMap<String,List<Employee>> employeesDepartment= new HashMap<>();
-	TreeMap<Float,List<Manager>> factorManagers = new TreeMap<>();
+	TreeMap<Long, Employee> employees = new TreeMap<>();
+	HashMap<String, List<Employee>> employeesDepartment = new HashMap<>();
+	TreeMap<Float, List<Manager>> factorManagers = new TreeMap<>();
+
 	@Override
 	public Iterator<Employee> iterator() {
-		//Don't use new class only one line code
-		return null;
-	}
 
-	
+		return employees.values().iterator();
+	}
 
 	@Override
 	public void addEmployee(Employee empl) {
-		// TODO Auto-generated method stub
+		if (employees.containsKey(empl.getId()) || empl == null) {
+			throw new IllegalStateException();
+		}
 
+		employees.put(empl.getId(), empl);
+		employeesDepartment.computeIfAbsent(empl.getDepartment(), k -> new ArrayList<>()).add(empl);
+
+		if (empl instanceof Manager) {
+			Manager manager = (Manager) empl;
+			factorManagers.computeIfAbsent(manager.factor, k -> new ArrayList<>()).add(manager);
+		}
 	}
 
 	@Override
 	public Employee getEmployee(long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return employees.get(id);
 	}
 
 	@Override
 	public Employee removeEmployee(long id) {
-		// TODO Auto-generated method stub
-		return null;
+		Employee removed = employees.remove(id);
+		if (removed != null) {
+			employeesDepartment.get(removed.getDepartment()).remove(removed);
+			if (employeesDepartment.get(removed.getDepartment()).isEmpty()) {
+				employeesDepartment.remove(removed.getDepartment());
+			}
+			if (removed instanceof Manager) {
+				Manager manager = (Manager) removed;
+				factorManagers.get(manager.factor).remove(manager);
+				if (factorManagers.get(manager.factor).isEmpty()) {
+					factorManagers.remove(manager.factor);
+				}
+			}
+		} else {
+			throw new NoSuchElementException();
+		}
+
+		return removed;
 	}
 
 	@Override
 	public int getDepartmentBudget(String department) {
-		// TODO Auto-generated method stub
-		return 0;
+		return employeesDepartment
+				.getOrDefault(department, Collections.emptyList())
+				.stream()
+				.mapToInt(Employee::computeSalary)
+				.sum();
 	}
 
 	@Override
 	public String[] getDepartments() {
-		// TODO Auto-generated method stub
-		return null;
+		return employeesDepartment.keySet().toArray(new String[0]);
 	}
 
-	@Override
 	public Manager[] getManagersWithMostFactor() {
-		// TODO Auto-generated method stub
-		return null;
+		return factorManagers.lastEntry().getValue().toArray(new Manager[0]);
 	}
-
 }
