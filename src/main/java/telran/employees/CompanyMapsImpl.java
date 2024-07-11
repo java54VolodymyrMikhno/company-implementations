@@ -2,8 +2,10 @@ package telran.employees;
 
 import java.util.*;
 
+import telran.io.Persistable;
+
 //So far we do consider optimization
-public class CompanyMapsImpl implements Company {
+public class CompanyMapsImpl implements Company ,Persistable {
 	TreeMap<Long, Employee> employees = new TreeMap<>();
 	HashMap<String, List<Employee>> employeesDepartment = new HashMap<>();
 	TreeMap<Float, List<Manager>> factorManagers = new TreeMap<>();
@@ -72,5 +74,18 @@ public class CompanyMapsImpl implements Company {
 
 	public Manager[] getManagersWithMostFactor() {
 		return factorManagers.lastEntry().getValue().toArray(new Manager[0]);
+	}
+
+	@Override
+	public void save(String filePathStr) {
+		// TODO Auto-generated method stub
+		
+		
+	}
+
+	@Override
+	public void restore(String filePathStr) {
+		// TODO Auto-generated method stub
+		
 	}
 }

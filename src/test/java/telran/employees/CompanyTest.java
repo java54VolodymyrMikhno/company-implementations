@@ -5,8 +5,11 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 
+import telran.io.Persistable;
+
 
 abstract class CompanyTest {
+private static final String EMPLOYEES_TEST_FILE = "employeesTest.data";
 private static final long ID1 = 123;
 private static final int SALARY1 = 1000;
 private static final String DEPARTMENT1 = "QA";
@@ -97,5 +100,15 @@ void setCompany() {
 		}
 		assertArrayEquals(managersExpected, company.getManagersWithMostFactor());
 	}
+	@Test
+	void persistableTest() {
+		if(company instanceof Persistable) {
+			((Persistable) company).save(EMPLOYEES_TEST_FILE);
+			Company companyTest = getEmptyCompany();
+			((Persistable)companyTest).restore(EMPLOYEES_TEST_FILE);
+			assertIterableEquals(company, companyTest);
+		}
+	}
+	protected abstract Company getEmptyCompany();
 
 }
