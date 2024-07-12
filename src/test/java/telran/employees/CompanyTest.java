@@ -1,15 +1,17 @@
 package telran.employees;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
+
 import org.junit.jupiter.api.Test;
 
 import telran.io.Persistable;
 
-
 abstract class CompanyTest {
-private static final String EMPLOYEES_TEST_FILE = "employeesTest.data";
 private static final long ID1 = 123;
 private static final int SALARY1 = 1000;
 private static final String DEPARTMENT1 = "QA";
@@ -30,6 +32,7 @@ private static final long ID5 = 300;
 private static final float FACTOR3 = 3;
 private static final long ID6 = 400;
 private static final long ID7 = 500;
+private static final String EMPLOYEES_TEST_FILE = "employeesTest.data";
 Employee empl1 = new WageEmployee(ID1, SALARY1, DEPARTMENT1, WAGE1, HOURS1);
 Employee empl2 = new Manager(ID2, SALARY2, DEPARTMENT1, FACTOR1);
 Employee empl3 = new SalesPerson(ID3, SALARY3, DEPARTMENT2, WAGE1, HOURS1, PERCENT1, SALES1);
@@ -86,6 +89,10 @@ void setCompany() {
 	@Test
 	void testGetDepartments() {
 		String [] expected = {DEPARTMENT1, DEPARTMENT2};
+		Arrays.sort(expected);
+		assertArrayEquals(expected, company.getDepartments());
+		expected = new String[] {DEPARTMENT1};
+		company.removeEmployee(ID3);
 		assertArrayEquals(expected, company.getDepartments());
 	}
 	@Test
@@ -99,16 +106,43 @@ void setCompany() {
 			company.addEmployee(mng);
 		}
 		assertArrayEquals(managersExpected, company.getManagersWithMostFactor());
+		company.removeEmployee(ID4);
+		company.removeEmployee(ID5);
+		company.removeEmployee(ID6);
+		company.removeEmployee(ID7);
+		assertArrayEquals(new Manager[] {(Manager) empl2}, company.getManagersWithMostFactor());
+		company.removeEmployee(ID2);
+		assertArrayEquals(new Manager[0],company.getManagersWithMostFactor());
+		
 	}
 	@Test
+		void iteratorRemoveTest() {
+			Iterator<Employee> it = company.iterator();
+			while(it.hasNext()) {
+				Employee empl = it.next();
+				if(empl.computeSalary() > 2000) {
+					it.remove();
+				}
+			}
+			assertThrowsExactly(IllegalStateException.class, it::remove);
+			assertThrowsExactly(NoSuchElementException.class,
+					() -> company.removeEmployee(ID2));
+			assertThrowsExactly(NoSuchElementException.class,
+					() -> company.removeEmployee(ID3));
+			assertEquals(0, company.getDepartmentBudget(DEPARTMENT2));
+			assertArrayEquals(new Manager[0], company.getManagersWithMostFactor());
+			assertArrayEquals(new String[] {DEPARTMENT1}, company.getDepartments());
+		}
+	@Test
 	void persistableTest() {
-		if(company instanceof Persistable) {
-			((Persistable) company).save(EMPLOYEES_TEST_FILE);
+		if (company instanceof Persistable) {
+			((Persistable)company).save(EMPLOYEES_TEST_FILE);
 			Company companyTest = getEmptyCompany();
 			((Persistable)companyTest).restore(EMPLOYEES_TEST_FILE);
 			assertIterableEquals(company, companyTest);
 		}
 	}
 	protected abstract Company getEmptyCompany();
+	
 
 }
