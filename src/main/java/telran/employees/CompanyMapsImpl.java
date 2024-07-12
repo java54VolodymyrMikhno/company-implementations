@@ -1,6 +1,10 @@
 package telran.employees;
 
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.*;
+
+import org.json.JSONObject;
 
 import telran.io.Persistable;
 
@@ -78,7 +82,15 @@ public class CompanyMapsImpl implements Company ,Persistable {
 
 	@Override
 	public void save(String filePathStr) {
-		// TODO Auto-generated method stub
+		try(PrintWriter writer = new PrintWriter(new FileWriter(filePathStr))) {
+			employees.values().forEach(empl -> {
+				JSONObject jsonObject = new JSONObject();
+				empl.fillEmployee(jsonObject);
+				writer.println();
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		
 	}
