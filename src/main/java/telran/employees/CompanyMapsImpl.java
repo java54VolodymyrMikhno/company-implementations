@@ -2,7 +2,6 @@ package telran.employees;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.json.JSONObject;
 import telran.io.Persistable;
