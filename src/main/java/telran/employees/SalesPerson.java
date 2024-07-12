@@ -6,6 +6,9 @@ public class SalesPerson extends WageEmployee {
 	
 	float percent;
 	long sales;
+	public SalesPerson() {
+		
+	}
 	public SalesPerson(long id, int basicSalary, String department, int hours, int wage, float percent, long sales) {
 		super(id, basicSalary, department, hours, wage);
 		this.percent = percent;
@@ -16,11 +19,15 @@ public class SalesPerson extends WageEmployee {
 		return Math.round(super.computeSalary() + sales * percent / 100);
 	}
 	protected void fillJSONObject(JSONObject jsonObject) {
-		//TODO
+		super.fillJSONObject(jsonObject);
+		jsonObject.put("percent", percent);
+		jsonObject.put("sales", sales);
 	}
 
 	protected void fillClassName(JSONObject jsonObject) {
-		//TODO
+		super.fillClassName(jsonObject);
+		percent = jsonObject.getFloat("percent");
+		sales = jsonObject.getLong("sales");
 	}
 
 }
