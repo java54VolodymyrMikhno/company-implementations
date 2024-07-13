@@ -108,44 +108,25 @@ public class CompanyMapsImpl implements Company, Persistable {
 
 	@Override
 	public void save(String filePathStr) {
-		try (PrintWriter writer = new PrintWriter(new FileWriter(filePathStr))) {
-			employees.values().forEach(employee -> {
-				JSONObject jsonObject = new JSONObject();
-				employee.fillJSONObject(jsonObject);
-				writer.println(jsonObject.toString());
-			});
-		} catch (IOException e) {
+	    try (PrintWriter writer = new PrintWriter(filePathStr)) {
+	        employees.values().forEach(employee -> {
+	            writer.println(employee.getJSON());
+	        });
+	    } catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
 	public void restore(String filePathStr) {
-		try (BufferedReader reader = new BufferedReader(new FileReader(filePathStr))) {
-
-			reader.lines().forEach(line -> {
-				try {
-					JSONObject jsonObject = new JSONObject(line);
-					String className = jsonObject.getString("className");
-					className = className.replaceAll(".*\\.", "");
-
-					Employee employee = switch (className) {
-                        case "Manager" -> new Manager();
-                        case "Employee" -> new Employee();
-                        case "WageEmployee" -> new WageEmployee();
-                        case "SalesPerson" -> new SalesPerson();
-						default -> throw new IllegalArgumentException("Unknown class name: " + className);
-                    };
-
-                    employee.fillEmployee(jsonObject);
-                    addEmployee(employee);
-                } catch (Exception e) {
-					e.printStackTrace();
-				}
-			});
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	    try (BufferedReader reader = new BufferedReader(new FileReader(filePathStr))) {
+	        reader.lines().forEach(line -> {
+	           Employee eml = (Employee) new Employee().setObject(line);
+	           addEmployee(eml);
+	        });
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
 	}
 }
 
