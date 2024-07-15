@@ -32,6 +32,7 @@ public class WageEmployee extends Employee {
 
 	@Override
 	protected void fillJSONObject(JSONObject jsonObject) {
+		fillClassName(jsonObject);
 		super.fillJSONObject(jsonObject);
 		jsonObject.put("hours", hours);
 		jsonObject.put("wage", wage);

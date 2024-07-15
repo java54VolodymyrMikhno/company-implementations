@@ -105,28 +105,22 @@ public class CompanyMapsImpl implements Company, Persistable {
 		}
 		return res;
 	}
-
 	@Override
 	public void save(String filePathStr) {
-	    try (PrintWriter writer = new PrintWriter(filePathStr)) {
-	        employees.values().forEach(employee -> {
-	            writer.println(employee.getJSON());
-	        });
-	    } catch (FileNotFoundException e) {
-			e.printStackTrace();
+		try(PrintWriter writer = new PrintWriter(filePathStr)) {
+			this.forEach(empl -> writer.println(empl.getJSON()));
+		} catch(Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
-
 	@Override
 	public void restore(String filePathStr) {
-	    try (BufferedReader reader = new BufferedReader(new FileReader(filePathStr))) {
-	        reader.lines().forEach(line -> {
-	           Employee eml = (Employee) new Employee().setObject(line);
-	           addEmployee(eml);
-	        });
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
+		try(BufferedReader reader = new BufferedReader(new FileReader(filePathStr))){
+			reader.lines().map(l -> (Employee) new Employee().setObject(l))
+			.forEach(this::addEmployee);
+		}catch(Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
 
