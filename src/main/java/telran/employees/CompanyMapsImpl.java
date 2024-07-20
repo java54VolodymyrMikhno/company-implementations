@@ -40,7 +40,7 @@ public class CompanyMapsImpl implements Company, Persistable {
 	@Override
 	public void addEmployee(Employee empl) {
 		if (employees.putIfAbsent(empl.getId(), empl) != null) {
-			throw new IllegalStateException();
+			throw new IllegalStateException("employee already exists");
 		}
 		addToIndexMap(employeesDepartment, empl.getDepartment(), empl);
 		if (empl instanceof Manager) {
