@@ -3,7 +3,6 @@ package telran.employees;
 import java.io.*;
 import java.util.*;
 
-import org.json.JSONObject;
 import telran.io.Persistable;
 //So far we do consider optimization
 public class CompanyMapsImpl implements Company, Persistable {
@@ -60,7 +59,7 @@ public class CompanyMapsImpl implements Company, Persistable {
 	public Employee removeEmployee(long id) {
 		Employee empl = employees.remove(id);
 		if(empl == null) {
-			throw new NoSuchElementException();
+			throw new NoSuchElementException("Employee not exist");
 		}
 		removeFromIndexMaps(empl);
 		return empl;

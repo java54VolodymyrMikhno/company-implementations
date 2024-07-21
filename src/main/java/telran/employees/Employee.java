@@ -1,6 +1,6 @@
 package telran.employees;
 
-import java.lang.reflect.InvocationTargetException;
+
 import java.util.Objects;
 
 import org.json.JSONObject;
@@ -88,5 +88,6 @@ public class Employee implements Comparable<Employee>, JSONable{
 		basicSalary = jsonObject.getInt("basicSalary");
 		
 	}
+	
 	
 }
